@@ -23,3 +23,16 @@ fn is_prime(n: u64) -> bool {
     }
     true
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_prime_filter() {
+        let primes: Vec<u32> = (0..50).filter(|&n| is_prime(n)).collect();
+
+        let expected_primes = vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
+
+        assert_eq!(primes, expected_primes);
+    }
+}
