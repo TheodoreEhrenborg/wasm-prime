@@ -12,7 +12,8 @@ pub fn greet() {
     alert("Hello, wasm-prime!");
 }
 
-fn is_prime(n: u64) -> bool {
+#[wasm_bindgen]
+pub fn is_prime(n: u64) -> bool {
     if n == 0 || n == 1 {
         return false;
     }

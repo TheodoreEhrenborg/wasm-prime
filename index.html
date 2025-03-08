@@ -62,13 +62,13 @@
         (async () => {
             try {
                 // Fetch the WASM file
-                const response = await fetch('prime.wasm');
-                const bytes = await response.arrayBuffer();
+                // Import the WASM module
+                const { default: init, is_prime } = await import('./pkg/wasm_prime.js');
+
+                // Initialize the WASM module
+                await init();
                 
-                // Instantiate the WebAssembly module
-                const results = await WebAssembly.instantiate(bytes, {});
-                wasmModule = results.instance.exports;
-                isPrimeFunction = wasmModule.is_prime;
+                isPrimeFunction = is_prime;
                 
                 // Hide loading, setup is complete
                 document.getElementById('loading').style.display = 'none';
