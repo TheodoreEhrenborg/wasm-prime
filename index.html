@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Number Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .prime {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .not-prime {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px 0;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prime Number Checker</h1>
+        <p>Enter a number to check if it's prime:</p>
+        
+        <input type="number" id="numberInput" min="1" placeholder="Enter a number">
+        <button id="checkButton">Check if Prime</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+        <div id="loading" style="display: none;">Loading WebAssembly module...</div>
+    </div>
+
+    <script>
+        // Initialize variables to hold our imports and WASM instance
+        let wasmModule;
+        let isPrimeFunction;
+
+        // Show loading message
+        document.getElementById('loading').style.display = 'block';
+
+        // Load and instantiate the WebAssembly module
+        (async () => {
+            try {
+                // Fetch the WASM file
+                const response = await fetch('prime.wasm');
+                const bytes = await response.arrayBuffer();
+                
+                // Instantiate the WebAssembly module
+                const results = await WebAssembly.instantiate(bytes, {});
+                wasmModule = results.instance.exports;
+                isPrimeFunction = wasmModule.is_prime;
+                
+                // Hide loading, setup is complete
+                document.getElementById('loading').style.display = 'none';
+                
+                // Add event listener to the check button
+                document.getElementById('checkButton').addEventListener('click', checkIfPrime);
+            } catch (error) {
+                console.error('Failed to load WASM module:', error);
+                document.getElementById('loading').textContent = 'Error loading WebAssembly module: ' + error.message;
+            }
+        })();
+
+        // Function to check if a number is prime
+        function checkIfPrime() {
+            const input = document.getElementById('numberInput');
+            const resultDiv = document.getElementById('result');
+            
+            // Get the input value
+            const num = BigInt(input.value);
+            
+            // Guard against invalid input
+            if (num <= 0 || isNaN(Number(input.value))) {
+                resultDiv.className = 'result not-prime';
+                resultDiv.textContent = 'Please enter a positive number.';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // Call the Rust function through WASM
+            const isPrime = isPrimeFunction(num);
+            
+            // Display the result
+            resultDiv.className = isPrime ? 'result prime' : 'result not-prime';
+            resultDiv.textContent = isPrime ? 
+                `${input.value} is a prime number!` : 
+                `${input.value} is not a prime number.`;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
