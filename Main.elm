@@ -4,6 +4,7 @@ import Browser
 import Html exposing (Html, div, input, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (onInput)
+import Time
 
 -- PORTS
 port checkPrime : String -> Cmd msg
@@ -25,6 +26,7 @@ init _ =
 type Msg
     = InputChanged String
     | GotPrimeResult String
+    | Tick Time.Posix
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -39,10 +41,18 @@ update msg model =
             , Cmd.none
             )
 
+        Tick _ ->
+            ( model
+            , checkPrime model.input
+            )
+
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    primeResult GotPrimeResult
+    Sub.batch
+        [ primeResult GotPrimeResult
+        , Time.every 100 Tick  -- 100 milliseconds = 0.1 seconds
+        ]
 
 -- VIEW
 view : Model -> Html Msg
