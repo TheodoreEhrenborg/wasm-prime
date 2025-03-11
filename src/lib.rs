@@ -1,5 +1,6 @@
 mod utils;
 
+use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -11,6 +12,67 @@ extern "C" {
 pub fn greet() {
     alert("Hello, wasm-prime!");
 }
+
+
+
+pub enum PrimeStatus {
+    Prime,
+    Composite,
+    CheckedUntil(u64),
+}
+
+#[wasm_bindgen]
+pub struct PrimeChecker {
+    results: HashMap<u64, PrimeStatus>,
+}
+
+#[wasm_bindgen]
+impl PrimeChecker {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        PrimeChecker {
+            results: HashMap::new(),
+        }
+    }
+
+    pub fn call(&mut self, n: u64) -> String {
+        // Check if n is 0 or 1
+        if n == 0 || n == 1 {
+            self.results.insert(n, PrimeStatus::Composite);
+            return "composite".to_string();
+        }
+
+        // Check if we've already computed this or have partial results
+        let start = match self.results.get(&n) {
+            Some(PrimeStatus::Prime) => return "prime".to_string(),
+            Some(PrimeStatus::Composite) => return "composite".to_string(),
+            Some(PrimeStatus::CheckedUntil(k)) => k + 1,
+            None => 2,
+        };
+
+        // Check for divisibility, up to 1000 trial divisions
+        let end = std::cmp::min(start + 1000, n);
+
+        for i in start..end {
+            if n % i == 0 {
+                self.results.insert(n, PrimeStatus::Composite);
+                return "composite".to_string();
+            }
+        }
+
+        // Update status based on how far we checked
+        if end == n {
+            // We've checked all possible divisors, it's prime
+            self.results.insert(n, PrimeStatus::Prime);
+            return "prime".to_string();
+        } else {
+            // We've checked up to 'end', but not all divisors
+            self.results.insert(n, PrimeStatus::CheckedUntil(end));
+            return "unknown".to_string();
+        }
+    }
+}
+
 
 #[wasm_bindgen]
 pub fn is_prime(n: u64) -> String {
