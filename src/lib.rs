@@ -13,16 +13,16 @@ pub fn greet() {
 }
 
 #[wasm_bindgen]
-pub fn is_prime(n: u64) -> bool {
+pub fn is_prime(n: u64) -> String {
     if n == 0 || n == 1 {
-        return false;
+        return "composite".to_string();
     }
     for i in 2..n {
         if n % i == 0 {
-            return false;
+            return "composite".to_string();
         }
     }
-    true
+    "prime".to_string()
 }
 #[cfg(test)]
 mod tests {
