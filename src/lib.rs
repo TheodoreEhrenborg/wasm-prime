@@ -50,8 +50,9 @@ impl PrimeChecker {
             None => 2,
         };
 
-        // Check for divisibility, up to 1000 trial divisions
-        let end = std::cmp::min(start + 1000, n);
+        let budget = 100_000;
+
+        let end = std::cmp::min(start + budget, n);
 
         for i in start..end {
             if n % i == 0 {
