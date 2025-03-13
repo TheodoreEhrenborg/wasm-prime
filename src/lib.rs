@@ -50,7 +50,7 @@ impl PrimeChecker {
             None => 2,
         };
 
-        let budget = 100_000;
+        let budget = 10_000_000;
 
         let end = std::cmp::min(start + budget, n);
 
