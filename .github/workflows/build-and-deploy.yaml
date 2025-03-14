@@ -28,39 +28,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - uses: jetli/wasm-pack-action@v0.4.0
         with:
-          profile: minimal
-          toolchain: stable
+          version: 0.13.1
 
-      - name: Install wasm-pack
-        run: cargo install wasm-pack
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: jorelali/setup-elm@v6
         with:
-          node-version: '16'
-
-      - name: Install Elm
-        run: npm install -g elm
+          elm-version: 0.19.1
 
       - name: Build project
-        run: bash ./build.bash
-        
+        run: ./build.bash
+
       - name: Setup Pages artifact
         run: |
-          # Create an _site directory with your built files
-          # Replace the paths below with the actual files you want to upload
           mkdir -p _site
-          cp -r path/to/your/built/files/* _site/
-          # For example:
-          # cp -r dist/* _site/
-          # cp index.html _site/
-          # cp -r assets _site/
+          cp -r pkg _site/
+          cp index.html _site/
+          cp elm.js _site/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
