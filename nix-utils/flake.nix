@@ -23,6 +23,7 @@
               elmPackages.elm-format
               elmPackages.elm-test
               elmPackages.elm-review
+              bacon
             ];
           };
         }
