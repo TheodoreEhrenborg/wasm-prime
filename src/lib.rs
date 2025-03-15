@@ -38,12 +38,12 @@ impl PrimeChecker {
     pub fn call(&mut self, n_str: String) -> String {
         let n = match BigUint::parse_bytes(&n_str.into_bytes(), 10) {
             Some(n) => n,
-            None => return "Whoops".to_string(),
+            None => return "Please enter a whole number".to_string(),
         };
 
         if n == BigUint::from(0_u32) || n == BigUint::from(1_u32) {
             self.results.insert(n, PrimeStatus::Composite);
-            return "composite".to_string();
+            return "Input should be at least 2".to_string();
         }
 
         // Check if we've already computed this or have partial results
