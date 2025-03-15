@@ -41,10 +41,7 @@ impl PrimeChecker {
             None => return "Whoops".to_string(),
         };
 
-        // Check if n is 0 or 1
-        if n == BigUint::parse_bytes(b"0", 10).unwrap()
-            || n == BigUint::parse_bytes(b"0", 10).unwrap()
-        {
+        if n == BigUint::from(0_u32) || n == BigUint::from(1_u32) {
             self.results.insert(n, PrimeStatus::Composite);
             return "composite".to_string();
         }
@@ -54,10 +51,10 @@ impl PrimeChecker {
             Some(PrimeStatus::Prime) => return "prime".to_string(),
             Some(PrimeStatus::Composite) => return "composite".to_string(),
             Some(PrimeStatus::CheckedUntil(k)) => k + BigUint::from(1_u32),
-            None => BigUint::parse_bytes(b"2", 10).unwrap(),
+            None => BigUint::from(2_u32),
         };
 
-        let budget = BigUint::parse_bytes(b"1_000_000", 10).unwrap();
+        let budget = BigUint::from(1_000_000_u64);
 
         let end = std::cmp::min(&start + budget, n.clone());
 
