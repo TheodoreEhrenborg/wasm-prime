@@ -57,7 +57,7 @@ impl PrimeChecker {
             None => BigUint::parse_bytes(b"2", 10).unwrap(),
         };
 
-        let budget = BigUint::parse_bytes(b"10_000_000", 10).unwrap();
+        let budget = BigUint::parse_bytes(b"1_000_000", 10).unwrap();
 
         let end = std::cmp::min(&start + budget, n.clone());
 
