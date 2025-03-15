@@ -1,5 +1,7 @@
 mod utils;
 
+use num_bigint::{BigUint, ToBigInt};
+use num_iter::range;
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
@@ -13,17 +15,15 @@ pub fn greet() {
     alert("Hello, wasm-prime!");
 }
 
-
-
 pub enum PrimeStatus {
     Prime,
     Composite,
-    CheckedUntil(u64),
+    CheckedUntil(BigUint),
 }
 
 #[wasm_bindgen]
 pub struct PrimeChecker {
-    results: HashMap<u64, PrimeStatus>,
+    results: HashMap<BigUint, PrimeStatus>,
 }
 
 #[wasm_bindgen]
@@ -35,9 +35,16 @@ impl PrimeChecker {
         }
     }
 
-    pub fn call(&mut self, n: u64) -> String {
+    pub fn call(&mut self, n_str: String) -> String {
+        let n = match BigUint::parse_bytes(&n_str.into_bytes(), 10) {
+            Some(n) => n,
+            None => return "Whoops".to_string(),
+        };
+
         // Check if n is 0 or 1
-        if n == 0 || n == 1 {
+        if n == BigUint::parse_bytes(b"0", 10).unwrap()
+            || n == BigUint::parse_bytes(b"0", 10).unwrap()
+        {
             self.results.insert(n, PrimeStatus::Composite);
             return "composite".to_string();
         }
@@ -46,16 +53,16 @@ impl PrimeChecker {
         let start = match self.results.get(&n) {
             Some(PrimeStatus::Prime) => return "prime".to_string(),
             Some(PrimeStatus::Composite) => return "composite".to_string(),
-            Some(PrimeStatus::CheckedUntil(k)) => k + 1,
-            None => 2,
+            Some(PrimeStatus::CheckedUntil(k)) => k + BigUint::from(1_u32),
+            None => BigUint::parse_bytes(b"2", 10).unwrap(),
         };
 
-        let budget = 10_000_000;
+        let budget = BigUint::parse_bytes(b"10_000_000", 10).unwrap();
 
-        let end = std::cmp::min(start + budget, n);
+        let end = std::cmp::min(&start + budget, n.clone());
 
-        for i in start..end {
-            if n % i == 0 {
+        for i in range(start, end.clone()) {
+            if &n % i == BigUint::ZERO {
                 self.results.insert(n, PrimeStatus::Composite);
                 return "composite".to_string();
             }
@@ -73,7 +80,6 @@ impl PrimeChecker {
         }
     }
 }
-
 
 #[wasm_bindgen]
 pub fn is_prime(n: u64) -> String {
