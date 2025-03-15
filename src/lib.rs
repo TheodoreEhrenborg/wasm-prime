@@ -1,6 +1,6 @@
 mod utils;
 
-use num_bigint::{BigUint, ToBigInt};
+use num_bigint::BigUint;
 use num_iter::range;
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
