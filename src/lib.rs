@@ -69,11 +69,11 @@ impl PrimeChecker {
         if end == n {
             // We've checked all possible divisors, it's prime
             self.results.insert(n, PrimeStatus::Prime);
-            return "prime".to_string();
+            "prime".to_string()
         } else {
             // We've checked up to 'end', but not all divisors
             self.results.insert(n, PrimeStatus::CheckedUntil(end));
-            return "unknown".to_string();
+            "unknown".to_string()
         }
     }
 }
