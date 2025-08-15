@@ -73,7 +73,7 @@ impl PrimeChecker {
         } else {
             // We've checked up to 'end', but not all divisors
             self.results.insert(n, PrimeStatus::CheckedUntil(end));
-            "unknown".to_string()
+            "computing...".to_string()
         }
     }
 }
